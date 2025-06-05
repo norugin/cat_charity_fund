@@ -1,0 +1,15 @@
+from pydantic import BaseSettings, EmailStr
+from typing import Optional
+
+
+class Settings(BaseSettings):
+    database_url: str = 'sqlite+aiosqlite:///./fastapi.db'
+    secret: str = 'qwerty'
+    first_superuser_email: Optional[EmailStr] = None
+    first_superuser_password: Optional[str] = None
+
+    class Config:
+        env_file = '.env'
+
+
+settings = Settings()
