@@ -1,13 +1,12 @@
 from typing import List, Optional
-
-from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-from app.crud.base import CRUDBase
+from app.crud.base_charity_repository import BaseCharityRepository
 from app.models import Donation, User
 
 
-class CRUDDonation(CRUDBase):
+class CRUDDonation(BaseCharityRepository[Donation]):
 
     async def get_by_user(
             self,

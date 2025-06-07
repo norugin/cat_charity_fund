@@ -1,24 +1,16 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.models import InvestInfoAndDatesAbstractModel
+from app.services.investment_service import InvestmentService
 
 
-async def donations_distribution(distributed, destinations,
-                                 session: AsyncSession):
-    processed_items = [distributed]
-    for destination in destinations:
-        processed_items.append(destination)
-        temp_distributed_remainder = distributed.remainder
-        temp_destination_remainder = destination.remainder
-        if temp_distributed_remainder < temp_destination_remainder:
-            destination.invested_amount += temp_distributed_remainder
-            distributed.close()
-            break
-        destination.close()
-        if temp_distributed_remainder > temp_destination_remainder:
-            distributed.invested_amount += temp_destination_remainder
-            continue
-        distributed.close()
-        break
-    session.add_all(processed_items)
-    await session.commit()
-    await session.refresh(distributed)
-    return distributed
+async def distribute_donations(
+    distributed: InvestInfoAndDatesAbstractModel,
+    destinations: list[InvestInfoAndDatesAbstractModel],
+    session: AsyncSession
+) -> InvestInfoAndDatesAbstractModel:
+    """
+    Распределяет пожертвование между доступными проектами.
+    """
+    return await InvestmentService.distribute_funds(
+        distributed, destinations, session
+    )

@@ -3,10 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.db import get_async_session
 from app.crud.donation import donation_crud
-from app.crud.charityproject import charity_project_crud
+from app.crud.charity_project import charity_project_crud
 from app.schemas.donation import (
     DonationCreate, DonationForAdminDB, DonationForUserDB,)
-from app.services.investment import donations_distribution
+from app.services.investment import (
+    distribute_donations as donations_distribution)
 from app.models import User
 from app.core.user import current_user, current_superuser
 
@@ -18,6 +19,7 @@ router = APIRouter()
     '/',
     response_model=DonationForUserDB,
     response_model_exclude_none=True,
+    summary='Создание нового пожертвования',
 )
 async def create_donation(
         donation: DonationCreate,
@@ -37,13 +39,14 @@ async def create_donation(
     '/',
     response_model=list[DonationForAdminDB],
     response_model_exclude_none=True,
-    dependencies=[Depends(current_superuser)]
+    dependencies=[Depends(current_superuser)],
+    summary='Получение списка всех пожертвований'
+            ' (доступно только администратору)',
 )
 async def get_all_donations(
         session: AsyncSession = Depends(get_async_session),
 ):
-    donations = await donation_crud.get_all(session)
-    return donations
+    return await donation_crud.get_all(session)
 
 
 @router.get(
@@ -51,6 +54,7 @@ async def get_all_donations(
     response_model=list[DonationForUserDB],
     response_model_exclude_none=True,
     response_model_exclude={'user_id'},
+    summary='Получение списка пожертвований текущего пользователя',
 )
 async def get_user_donations(
         session: AsyncSession = Depends(get_async_session),

@@ -1,3 +1,5 @@
-from .charityproject import router as charityproject_router  # noqa: F401
-from .donation import router as donation_router  # noqa: F401
-from .user import router as user_router  # noqa: F401
+__all__ = ['charity_project_router', 'donation_router', 'user_router']
+
+from .charity_project import router as charity_project_router
+from .donation import router as donation_router
+from .user import router as user_router
