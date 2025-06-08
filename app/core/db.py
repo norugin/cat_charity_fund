@@ -1,11 +1,11 @@
 from http import HTTPStatus
+from typing import Generator
 
 from fastapi.exceptions import HTTPException
 from sqlalchemy import Column, Integer
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
-from sqlalchemy.orm import declared_attr, declarative_base, sessionmaker
-from typing import Generator
+from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
 
 from app.core.config import settings
 

@@ -1,10 +1,10 @@
-from http import HTTPStatus
-
-from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
+from http import HTTPStatus
+from typing import Optional
+
 from fastapi import HTTPException
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base_charity_repository import BaseCharityRepository
 from app.models import CharityProject

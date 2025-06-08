@@ -1,9 +1,10 @@
-from typing import Optional, TypeVar, Generic
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from http import HTTPStatus
+from typing import Generic, Optional, TypeVar
+
 from fastapi import HTTPException
 from fastapi.encoders import jsonable_encoder
-from http import HTTPStatus
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 T = TypeVar('T')
 

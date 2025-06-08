@@ -1,20 +1,29 @@
 from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models import InvestInfoAndDatesAbstractModel
 
 
 class InvestmentService:
-    """
-    Сервис для работы с инвестициями.
+    """Сервис для работы с инвестициями.
+
+        Этот сервис предоставляет методы для работы с инвестициями,
+        включая распределение средств между проектами и обновление
+        статусов инвестиций.
     """
 
     @staticmethod
     def get_remaining_amount(
         invested_object: InvestInfoAndDatesAbstractModel
     ) -> int:
-        """
-        Рассчитывает оставшуюся сумму для инвестирования.
+        """Рассчитывает оставшуюся сумму для инвестирования.
+
+        Args:
+            invested_object: Инвестируемый объект
+
+        Returns:
+            Оставшаяся сумма для инвестирования
         """
         return invested_object.full_amount - invested_object.invested_amount
 
@@ -22,8 +31,10 @@ class InvestmentService:
     def mark_as_fully_invested(
         invested_object: InvestInfoAndDatesAbstractModel
     ) -> None:
-        """
-        Закрывает инвестицию как полностью проинвестированную.
+        """Закрывает инвестицию как полностью проинвестированную.
+
+        Args:
+            invested_object: Инвестируемый объект
         """
         invested_object.invested_amount = invested_object.full_amount
         invested_object.fully_invested = True
@@ -35,8 +46,15 @@ class InvestmentService:
         destinations: list[InvestInfoAndDatesAbstractModel],
         session: AsyncSession
     ) -> InvestInfoAndDatesAbstractModel:
-        """
-        Распределяет инвестиционную сумму между доступными целями.
+        """Распределяет инвестиционную сумму между доступными целями.
+
+        Args:
+            distributed: Распределяемый объект
+            destinations: Список доступных целей
+            session: Асинхронная сессия базы данных
+
+        Returns:
+            Обновленный распределяемый объект
         """
         processed_items = [distributed]
         for destination in destinations:
