@@ -1,19 +1,17 @@
-from http import HTTPStatus
 from typing import List
 
 from fastapi import APIRouter, Depends
-from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.validators import check_project_name_duplicate
+from app.api.validators import (check_is_project_invested,
+                                check_project_name_duplicate)
 from app.core.db import get_async_session
 from app.core.user import current_superuser
 from app.crud.charity_project import charity_project_crud
 from app.crud.donation import donation_crud
 from app.schemas.charity_project import (CharityProjecDB, CharityProjectCreate,
                                          CharityProjectUpdate)
-from app.services.investment import \
-    distribute_donations as donations_distribution
+from app.services.investment import distribute_donations
 from app.services.project_service import prepare_project_update_data
 
 router = APIRouter()
@@ -31,7 +29,7 @@ async def create_charity_project(
         session: AsyncSession = Depends(get_async_session)
 ) -> CharityProjecDB:
     await check_project_name_duplicate(project.name, session)
-    return await donations_distribution(
+    return await distribute_donations(
         distributed=await charity_project_crud.create(project, session),
         destinations=await donation_crud.get_opens(session),
         session=session
@@ -94,9 +92,5 @@ async def delete_project(
         session: AsyncSession = Depends(get_async_session),
 ) -> CharityProjecDB:
     project = await charity_project_crud.get_or_404(project_id, session)
-    if project.invested_amount > 0:
-        raise HTTPException(
-            HTTPStatus.BAD_REQUEST,
-            detail=f'{project} - были внесены средства, не подлежит удалению!'
-        )
+    await check_is_project_invested(project)
     return await charity_project_crud.delete(project, session)

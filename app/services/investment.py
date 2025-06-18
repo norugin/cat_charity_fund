@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.crud.donation import CRUDDonation
 from app.models import InvestInfoAndDatesAbstractModel
-from app.services.investment_service import InvestmentService
+from app.services.investment_service import distribute_funds
 
 
 async def distribute_donations(
@@ -19,6 +20,8 @@ async def distribute_donations(
         Returns:
             Обновленный распределяемый объект с новыми данными
     """
-    return await InvestmentService.distribute_funds(
-        distributed, destinations, session
-    )
+    processed_items, distributed = await distribute_funds(distributed,
+                                                          destinations)
+    return await CRUDDonation.apply_distribution(processed_items,
+                                                 distributed,
+                                                 session)

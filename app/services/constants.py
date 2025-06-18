@@ -1,0 +1,3 @@
+FORMAT = '%Y/%m/%d %H:%M:%S'
+ROWCOUNT = 100
+COLUMNCOUNT = 11

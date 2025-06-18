@@ -3,8 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.validators import (check_full_amount_not_less_than_invested,
                                 check_project_name_duplicate,
                                 check_project_not_fully_invested)
+from app.crud.charity_project import CRUDCharityProject
 from app.models import CharityProject
-from app.services.close_service import CloseService
 
 
 async def prepare_project_update_data(
@@ -34,6 +34,6 @@ async def prepare_project_update_data(
             project.id, new_full_amount, session
         )
         if new_full_amount == project.invested_amount:
-            await CloseService.close_investment(project, session)
+            await CRUDCharityProject(CharityProject).close(project, session)
 
     return update_data

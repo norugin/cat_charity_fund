@@ -4,6 +4,7 @@ from fastapi.exceptions import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.charity_project import charity_project_crud
+from app.models.charity_project import CharityProject
 
 
 async def check_project_name_duplicate(
@@ -50,4 +51,17 @@ async def check_full_amount_not_less_than_invested(
             status_code=HTTPStatus.BAD_REQUEST,
             detail=f'Нельзя установить значение full_amount'
                    f' меньше уже вложенной суммы: {project.invested_amount}.'
+        )
+
+
+async def check_is_project_invested(
+        project: CharityProject
+) -> None:
+    """
+    Проверяет, есть ли инвестиции в проект, перед его удалением.
+    """
+    if project.invested_amount > 0:
+        raise HTTPException(
+            HTTPStatus.BAD_REQUEST,
+            detail=f'{project} - были внесены средства, не подлежит удалению!'
         )

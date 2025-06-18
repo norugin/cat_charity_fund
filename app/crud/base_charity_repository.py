@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TypeVar
 
 from sqlalchemy import select
@@ -5,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.crud.base_repository import BaseRepository
 from app.models import CharityProject, Donation
-from app.services.close_service import CloseService
 
 T = TypeVar('T', CharityProject, Donation)
 
@@ -27,7 +27,9 @@ class BaseCharityRepository(BaseRepository[T]):
 
     async def close(
             self,
-            db_object: T,
+            db_object: CharityProject,
             session: AsyncSession
-    ) -> T:
-        return await CloseService.close_investment(db_object, session)
+    ) -> CharityProject:
+        db_object.fully_invested = True
+        db_object.close_date = datetime.utcnow()
+        return await self.save(db_object, session)

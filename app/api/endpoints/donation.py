@@ -8,8 +8,7 @@ from app.crud.donation import donation_crud
 from app.models import User
 from app.schemas.donation import (DonationCreate, DonationForAdminDB,
                                   DonationForUserDB)
-from app.services.investment import \
-    distribute_donations as donations_distribution
+from app.services.investment import distribute_donations
 
 router = APIRouter()
 
@@ -26,12 +25,11 @@ async def create_donation(
         user: User = Depends(current_user),
 ):
     donation = await donation_crud.create(donation, session, user)
-    donation = await donations_distribution(
+    return await distribute_donations(
         distributed=donation,
         destinations=await charity_project_crud.get_opens(session),
         session=session,
     )
-    return donation
 
 
 @router.get(

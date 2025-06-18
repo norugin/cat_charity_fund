@@ -1,4 +1,3 @@
-from datetime import datetime
 from http import HTTPStatus
 from typing import List, Optional
 
@@ -20,15 +19,6 @@ class CRUDCharityProject(BaseCharityRepository[CharityProject]):
         project = await session.execute(
             select(CharityProject.id).where(CharityProject.name == name))
         return project.scalars().first()
-
-    async def close(
-            self,
-            db_object: CharityProject,
-            session: AsyncSession
-    ) -> CharityProject:
-        db_object.fully_invested = True
-        db_object.close_date = datetime.utcnow()
-        return await self.save(db_object, session)
 
     async def get_or_404(
             self,
